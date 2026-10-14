@@ -28,7 +28,7 @@ jobs:
             qtbase5-dev qtbase5-dev-tools qttools5-dev qttools5-dev-tools \
             qtmultimedia5-dev libqt5serialport5-dev libqt5charts5-dev \
             libqt5websockets5-dev libqt5webchannel5-dev libqt5opengl5-dev \
-            qtpositioning5-dev qtlocation5-dev qtspeech5-dev libqt5svg5-dev \
+            qtpositioning5-dev qtlocation5-dev libqt5texttospeech5-dev libqt5svg5-dev \
             libunwind-dev libfftw3-dev libusb-1.0-0-dev libiio-dev \
             libairspy-dev libairspyhf-dev libbladerf-dev libhackrf-dev \
             librtlsdr-dev libsoapysdr-dev libasound2-dev libpulse-dev \
