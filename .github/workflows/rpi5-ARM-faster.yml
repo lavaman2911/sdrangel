@@ -1,4 +1,4 @@
-name: SDRangel Raspberry Pi 5 ARM64
+name: SDRangel Raspberry Pi 5 ARM64 faster
 
 on:
   workflow_dispatch:
