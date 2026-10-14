@@ -1,0 +1,85 @@
+name: SDRangel Raspberry Pi 5 ARM64
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+    container: debian:bookworm
+    steps:
+      - name: Install Git first
+        run: |
+          set -eux
+          apt-get update
+          apt-get install -y --no-install-recommends git ca-certificates
+          git --version
+
+      - name: Install build dependencies
+        run: |
+          set -eux
+          apt-get install -y --no-install-recommends \
+            cmake ninja-build build-essential g++ pkg-config dpkg-dev \
+            qtbase5-dev qtbase5-private-dev qtbase5-dev-tools qttools5-dev qttools5-dev-tools \
+            qtmultimedia5-dev libqt5serialport5-dev libqt5charts5-dev \
+            libqt5websockets5-dev libqt5webchannel5-dev libqt5opengl5-dev \
+            qtpositioning5-dev qtlocation5-dev libqt5texttospeech5-dev libqt5svg5-dev \
+            qtwebengine5-dev qtwebengine5-dev-tools libqt5gamepad5-dev \
+            libunwind-dev libfftw3-dev libusb-1.0-0-dev libiio-dev \
+            libairspy-dev libairspyhf-dev libbladerf-dev libhackrf-dev \
+            librtlsdr-dev libsoapysdr-dev libasound2-dev libpulse-dev \
+            libopencv-dev libboost-all-dev libavcodec-dev libavformat-dev \
+            libavdevice-dev libavfilter-dev libavutil-dev libswscale-dev \
+            libpostproc-dev libswresample-dev libfaad-dev libflac-dev \
+            libopus-dev libspeexdsp-dev libudev-dev libserialport-dev \
+            libcurl4-openssl-dev libmbedtls-dev libprotobuf-dev \
+            protobuf-compiler libgmp-dev liborc-0.4-dev libzstd-dev \
+            libxml2-dev
+
+      - name: Clone official master
+        run: |
+          git clone --depth 1 --branch master \
+            https://github.com/f4exb/sdrangel.git source
+          git -C source log -1 --format='%H %cs %s'
+
+      - name: Configure
+        run: |
+          cmake -S source -B source/build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DDPKG_BUILDER=ON
+
+      - name: Compile
+        run: |
+          cmake --build source/build --parallel 8
+
+      - name: Create install package
+        run: |
+          mkdir -p package-root
+          DESTDIR="$PWD/package-root" \
+            cmake --install source/build
+
+          mkdir -p package-root/DEBIAN
+          cat > package-root/DEBIAN/control <<'EOF'
+          Package: sdrangel-rpi5
+          Version: 0.0.1
+          Architecture: arm64
+          Maintainer: Local build
+          Description: SDRangel built for Raspberry Pi 5 ARM64
+          EOF
+
+          dpkg-deb --build package-root \
+            sdrangel-rpi5-arm64.deb
+
+      - name: Upload ARM64 package
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdrangel-rpi5-arm64
+          path: sdrangel-rpi5-arm64.deb
+          if-no-files-found: error
+          retention-days: 14
