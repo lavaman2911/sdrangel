@@ -13,30 +13,31 @@ jobs:
     runs-on: ubuntu-24.04-arm
     container: debian:bookworm
     steps:
+      - name: Install Git first
+        run: |
+          set -eux
+          apt-get update
+          apt-get install -y --no-install-recommends git ca-certificates
+          git --version
+
       - name: Install build dependencies
         run: |
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y 
-            git ca-certificates cmake ninja-build build-essential 
-            g++ pkg-config dpkg-dev 
-            qtbase5-dev qtbase5-dev-tools qttools5-dev 
-            qttools5-dev-tools qtmultimedia5-dev 
-            libqt5serialport5-dev libqt5charts5-dev 
-            libqt5websockets5-dev libqt5webchannel5-dev 
-            libqt5opengl5-dev qtpositioning5-dev 
-            libfftw3-dev libusb-1.0-0-dev libiio-dev 
-            libairspy-dev libairspyhf-dev libbladerf-dev 
-            libhackrf-dev librtlsdr-dev libsoapysdr-dev 
-            libasound2-dev libpulse-dev libopencv-dev 
-            libboost-all-dev libavcodec-dev libavformat-dev 
-            libavdevice-dev libavfilter-dev libavutil-dev 
-            libswscale-dev libpostproc-dev libswresample-dev 
-            libfaad-dev libflac-dev libopus-dev 
-            libspeexdsp-dev libudev-dev libserialport-dev 
-            libcurl4-openssl-dev libmbedtls-dev 
-            libprotobuf-dev protobuf-compiler libgmp-dev 
-            liborc-0.4-dev libzstd-dev libxml2-dev 
-            libfftw3-single3
+          set -eux
+          apt-get install -y --no-install-recommends \
+            cmake ninja-build build-essential g++ pkg-config dpkg-dev \
+            qtbase5-dev qtbase5-dev-tools qttools5-dev qttools5-dev-tools \
+            qtmultimedia5-dev libqt5serialport5-dev libqt5charts5-dev \
+            libqt5websockets5-dev libqt5webchannel5-dev libqt5opengl5-dev \
+            qtpositioning5-dev libfftw3-dev libusb-1.0-0-dev libiio-dev \
+            libairspy-dev libairspyhf-dev libbladerf-dev libhackrf-dev \
+            librtlsdr-dev libsoapysdr-dev libasound2-dev libpulse-dev \
+            libopencv-dev libboost-all-dev libavcodec-dev libavformat-dev \
+            libavdevice-dev libavfilter-dev libavutil-dev libswscale-dev \
+            libpostproc-dev libswresample-dev libfaad-dev libflac-dev \
+            libopus-dev libspeexdsp-dev libudev-dev libserialport-dev \
+            libcurl4-openssl-dev libmbedtls-dev libprotobuf-dev \
+            protobuf-compiler libgmp-dev liborc-0.4-dev libzstd-dev \
+            libxml2-dev
 
       - name: Clone official master
         run: |
